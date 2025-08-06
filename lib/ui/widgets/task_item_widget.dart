@@ -4,12 +4,13 @@ import 'package:task_manager_25_07_25/data/models/task_model.dart';
 class TaskItemWidget extends StatelessWidget {
   const TaskItemWidget({
     super.key,
-    required this.taskModel,
+    required this.taskModel, required this.onDeleteTap,
     //required this.color,
     //this.status,
   });
 
   final TaskModel taskModel;
+  final VoidCallback onDeleteTap;
 
   //final Color color;
   //final status;
@@ -41,8 +42,40 @@ class TaskItemWidget extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+                    IconButton(onPressed: () {
+                      onDeleteTap();
+                    }, icon: Icon(Icons.delete)),
+
+                    IconButton(onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Change Status'),
+                              content: Column(
+                                children: [
+                                  ListTile(title: Text('New'), onTap: () {
+                                    _updateStatus();
+                                  }),
+                                  Divider(),
+                                  ListTile(title: Text('inProgress'), onTap: () {
+                                    _updateStatus();
+                                  }),
+                                  Divider(),
+                                  ListTile(title: Text('Completed'), onTap: () {
+                                    _updateStatus();
+                                  }),
+                                  Divider(),
+                                  ListTile(title: Text('Cancelled'), onTap: () {
+                                    _updateStatus();
+                                  }),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+
+                        }, icon: Icon(Icons.edit)),
                   ],
                 ),
               ],
@@ -52,6 +85,12 @@ class TaskItemWidget extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _updateStatus()async{
+
+
+  }
+
 
   Color _getStatusColor(String status) {
     if (status == 'New') {
@@ -64,4 +103,5 @@ class TaskItemWidget extends StatelessWidget {
       return Colors.green;
     }
   }
+
 }

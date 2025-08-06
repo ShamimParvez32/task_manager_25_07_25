@@ -41,13 +41,13 @@ class NetworkCaller {
         );
       }
 
-      else if(response.statusCode == 401){
+      /*else if(response.statusCode == 401){
         await _logout();
         return NetworkResponse(
           isSuccess: true,
           statusCode: response.statusCode,
         );
-      }
+      }*/
 
       else {
         return NetworkResponse(

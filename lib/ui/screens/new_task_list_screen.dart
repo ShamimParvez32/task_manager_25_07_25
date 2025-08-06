@@ -73,6 +73,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
       itemBuilder: (context, index) {
         return TaskItemWidget(
           taskModel: newTaskListModel!.taskList![index],
+          onDeleteTap: () => _deleteTask(newTaskListModel!.taskList![index].sId!),
          // status: 'New',
           //color: Colors.teal,
         );
@@ -141,4 +142,18 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     _getNewTaskListInProgress = false;
     setState(() {});
   }
+
+  Future<void>_deleteTask(String id)async{
+    NetworkResponse response =await NetworkCaller.getRequest(url: Urls.deleteTaskUrl(id));
+    if(response.isSuccess){
+      setState(() {
+        newTaskListModel!.taskList!.removeWhere((task)=> task.sId == id);
+      });
+      showSnackBarMessage(context, 'Task deleted successfully');
+    } else {
+      showSnackBarMessage(context, response.errorMessage);
+    }
+
+  }
+
 }
