@@ -35,7 +35,7 @@ class _ProgressTaskListScreenState extends State<ProgressTaskListScreen> {
                 shrinkWrap: true,
                 primary: false,
                 itemBuilder: (context, index) {
-                  return TaskItemWidget(color: Colors.purple,);
+                 // return TaskItemWidget(color: Colors.purple,);
                 },
     );
   }

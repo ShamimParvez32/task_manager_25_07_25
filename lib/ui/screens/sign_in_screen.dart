@@ -1,3 +1,4 @@
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager_25_07_25/data/models/user_model.dart';
@@ -120,30 +121,23 @@ Future<void>_signIn()async{
 
   final NetworkResponse response = await NetworkCaller.postRequest(url: Urls.logInUrl, body: requestBody);
   if (response.isSuccess) {
-    String token =response.responseData!['token'];
+
+    String token= response.responseData!['token'];
     UserModel userModel =UserModel.fromJson(response.responseData!['data']);
     await AuthController.saveUserData(token, userModel);
+
   Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
   } else {
     singInProgress = false;
-    _clearTextField();
-  setState(() {});
-
-  }
+    setState(() {});
     if (response.statusCode == 401) {
       showSnackBarMessage(context, 'Email/Password is invalid! Try again.');
     } else {
       showSnackBarMessage(context, response.errorMessage);
     }
+  }
+
 }
-
-
-
-
-
-
-
-
 
 
   Widget _buildSignUpSection() {
@@ -166,10 +160,6 @@ Future<void>_signIn()async{
     );
   }
 
-  void _clearTextField(){
-    _emailTEController.clear();
-    _passwordTEController.clear();
-  }
 
   @override
   void dispose() {

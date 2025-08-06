@@ -35,7 +35,7 @@ class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
                 shrinkWrap: true,
                 primary: false,
                 itemBuilder: (context, index) {
-                  return TaskItemWidget(color: Colors.green,);
+                 // return TaskItemWidget(color: Colors.green,);
                 },
     );
   }

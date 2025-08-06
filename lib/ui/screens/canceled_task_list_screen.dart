@@ -35,7 +35,7 @@ class _CanceledTaskListScreenState extends State<CanceledTaskListScreen> {
                 shrinkWrap: true,
                 primary: false,
                 itemBuilder: (context, index) {
-                  return TaskItemWidget(color: Colors.red,);
+                  //return TaskItemWidget(color: Colors.red, taskModel: ,status: 'Cancelde',);
                 },
     );
   }
