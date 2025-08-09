@@ -1,10 +1,21 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:task_manager_25_07_25/data/models/user_model.dart';
+import 'package:task_manager_25_07_25/data/services/network_caller.dart';
+import 'package:task_manager_25_07_25/data/utils/urls.dart';
+import 'package:task_manager_25_07_25/ui/controllers/auth_controller.dart';
+import 'package:task_manager_25_07_25/ui/widgets/center_circular_progress_indecator.dart';
 import 'package:task_manager_25_07_25/ui/widgets/screen_background.dart';
+import 'package:task_manager_25_07_25/ui/widgets/showSnackBarMessage.dart';
 import 'package:task_manager_25_07_25/ui/widgets/tm_appBar.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
-static const String name='/update-profile';
+
+  static const String name = '/update-profile';
+
   @override
   State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
 }
@@ -18,11 +29,26 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  XFile? _pickedImage;
+  bool _updateProfileInProgress = false;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _emailTEController.text = AuthController.userModel?.email ?? '';
+    _firstNameTEController.text = AuthController.userModel?.firstName ?? '';
+    _lastNameTEController.text = AuthController.userModel?.lastName ?? '';
+    _mobileTEController.text = AuthController.userModel?. mobile?? '';
+  }
 
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = Theme
+        .of(context)
+        .textTheme;
     return Scaffold(
 
       appBar: TMAppbar(
@@ -42,80 +68,174 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   Widget _buildFormProfile(TextTheme textTheme) {
     return Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 80),
-                Text('Update Profile', style: textTheme.titleLarge),
-                const SizedBox(height: 24),
-                _buildPhotoPicker(),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _emailTEController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: 'Email'),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _firstNameTEController,
-                  decoration: const InputDecoration(hintText: 'First Name'),
-                ), const SizedBox(height: 8),
-                TextFormField(
-                  controller: _lastNameTEController,
-                  decoration: const InputDecoration(hintText: 'Last Name'),
-                ), const SizedBox(height: 8),
-                TextFormField(
-                  controller: _mobileTEController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(hintText: 'Mobile'),
-                ), const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passwordTEController,
-                  obscureText: true,
-                  decoration: const InputDecoration(hintText: 'Password'),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Icon(Icons.arrow_circle_right_outlined),
-                ),
-              ],
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 80),
+          Text('Update Profile', style: textTheme.titleLarge),
+          const SizedBox(height: 24),
+          _buildPhotoPicker(),
+          const SizedBox(height: 8),
+          TextFormField(
+            enabled: false,
+            controller: _emailTEController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(hintText: 'Email'),
+            validator: (String? value) {
+              if (value
+                  ?.trim()
+                  .isEmpty ?? true) {
+                return 'Enter your email';
+              }
+              return null;
+            },
+
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _firstNameTEController,
+            decoration: const InputDecoration(hintText: 'First Name'),
+            validator: (String? value) {
+              if (value
+                  ?.trim()
+                  .isEmpty ?? true) {
+                return 'Enter your firstName';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _lastNameTEController,
+            decoration: const InputDecoration(hintText: 'Last Name'),
+            validator: (String? value) {
+              if (value
+                  ?.trim()
+                  .isEmpty ?? true) {
+                return 'Enter your lastName';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _mobileTEController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'Mobile'),
+            validator: (String? value) {
+              if (value
+                  ?.trim()
+                  .isEmpty ?? true) {
+                return 'Enter your mobile no';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _passwordTEController,
+            obscureText: true,
+            decoration: const InputDecoration(hintText: 'Password'),
+          ),
+          const SizedBox(height: 24),
+          Visibility(
+            visible: _updateProfileInProgress == false,
+            replacement: const CenterCircularProgressIndicator(),
+            child: ElevatedButton(
+              onPressed: () {
+                _onTapUpdateButton();
+              },
+              child: const Icon(Icons.arrow_circle_right_outlined),
             ),
-          );
+          ),
+        ],
+      ),
+    );
   }
-
-
-
 
   Widget _buildPhotoPicker() {
-    return Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white,borderRadius: BorderRadius.circular(8)
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        decoration: const BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            bottomLeft: Radius.circular(8)
-                          )
-                        ),
-                        alignment: Alignment.center,
-                        child: const Text('Photo',style: TextStyle(color: Colors.white),),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text('No item selected',maxLines: 1,)
-                    ],
-                  ),
-                );
+    return GestureDetector(
+      onTap:_pickImage,
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(8)
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      bottomLeft: Radius.circular(8)
+                  )
+              ),
+              alignment: Alignment.center,
+              child: const Text(
+                'Photo', style: TextStyle(color: Colors.white),),
+            ),
+            const SizedBox(width: 12),
+             Text(_pickedImage == null ? 'No item selected' : _pickedImage!.name,
+               maxLines: 1,)
+          ],
+        ),
+      ),
+    );
   }
 
+  void _onTapUpdateButton() {
+    if (_formKey.currentState!.validate()) {
+      _updateProfile();
+    }
+  }
+
+  Future<void> _pickImage() async {
+    ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      _pickedImage = image;
+      setState(() {});
+    }
+  }
+
+
+  Future<void> _updateProfile() async {
+    _updateProfileInProgress =true;
+    setState(() {
+    });
+    Map<String, dynamic> requestBody= {
+      "email": _emailTEController.text.trim(),
+      "firstName": _firstNameTEController.text.trim(),
+      "lastName": _lastNameTEController.text.trim(),
+      "mobile": _mobileTEController.text.trim(),
+    };
+
+    if(_pickedImage!=null){
+      List<int> imageBytes = await _pickedImage!.readAsBytes();
+      requestBody['photo'] = base64Encode(imageBytes);
+    }
+
+    if(_passwordTEController.text.isNotEmpty){
+      requestBody['password']=_passwordTEController.text;
+    }
+
+    final NetworkResponse response = await NetworkCaller.postRequest(url: Urls.updateProfileUrl,body: requestBody);
+    _updateProfileInProgress =false;
+    setState(() {
+    });
+    if(response.isSuccess){
+      _passwordTEController.clear();
+      showSnackBarMessage(context, 'Profile Updated');
+    }
+    else{
+      showSnackBarMessage(context, response.errorMessage);
+    }
+
+  }
 
 
   @override
@@ -127,7 +247,5 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     _firstNameTEController.dispose();
     _lastNameTEController.dispose();
     _mobileTEController.dispose();
-
-
   }
 }

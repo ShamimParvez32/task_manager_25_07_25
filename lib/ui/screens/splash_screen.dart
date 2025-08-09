@@ -114,8 +114,12 @@ class _SplashScreenState extends State<SplashScreen> {
     if(isUserLoggedIn){
       Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
     }
+    else{
+      Navigator.pushReplacementNamed(context, SignInScreen.name);
 
-    Navigator.pushReplacementNamed(context, SignInScreen.name);
+    }
+
+
   }
 
   @override

@@ -58,6 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: const InputDecoration(hintText: 'Email'),
                   ),
                   const SizedBox(height: 8),
+
                   TextFormField(
                     validator: (String? value){
                       if(value?.trim().isEmpty ?? true){
@@ -70,6 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: _firstNameTEController,
                     decoration: const InputDecoration(hintText: 'First Name'),
                   ), const SizedBox(height: 8),
+
                   TextFormField(
                     validator: (String? value){
                       if(value?.trim().isEmpty ?? true){
@@ -81,32 +83,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                     controller: _lastNameTEController,
                     decoration: const InputDecoration(hintText: 'Last Name'),
-                  ), const SizedBox(height: 8),
+                  ),
+                  const SizedBox(height: 8),
+
                   TextFormField(
-                    validator: (String? value){
-                      if(value?.trim().isEmpty ?? true){
-                        return 'Enter your mobile';
-                      }
-                      else {
-                        return null;
-                      }
-                    },
                     controller: _mobileTEController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(hintText: 'Mobile'),
-                  ), const SizedBox(height: 8),
-                  TextFormField(
                     validator: (String? value){
-                      if(value?.trim().isEmpty ?? true){
-                        return 'Enter your password';
-                      }
-                      else {
-                        return null;
-                      }
-                    },
+                    if(value?.trim().isEmpty ?? true){
+                      return 'Enter your mobile';
+                    }
+                    else {
+                      return null;
+                    }
+                  },
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  TextFormField(
                     controller: _passwordTEController,
                     obscureText: true,
                     decoration: const InputDecoration(hintText: 'Password'),
+                    validator: (String? value){
+                    if(value?.trim().isEmpty ?? true){
+                      return 'Enter your password';
+                    }
+                    else {
+                      return null;
+                    }
+                  },
                   ),
                   const SizedBox(height: 24),
                   Visibility(
@@ -146,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "firstName": _firstNameTEController.text.trim(),
       "lastName": _lastNameTEController.text.trim(),
       "mobile": _mobileTEController.text.trim(),
-      "password": _mobileTEController.text.trim(),
+      "password": _passwordTEController.text.trim(),
       "photo": ""
     };
     

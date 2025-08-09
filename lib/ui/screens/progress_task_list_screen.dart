@@ -57,6 +57,7 @@ class _ProgressTaskListScreenState extends State<ProgressTaskListScreen> {
                 itemBuilder: (context, index) {
                   return TaskItemWidget(
                     taskModel: progressTaskListModel!.progressTaskList![index],
+                    onStatusUpdate: () => _getProgressTaskList(),
                     onDeleteTap: () {  },);
                 },
     );

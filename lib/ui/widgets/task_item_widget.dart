@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_25_07_25/app.dart';
 import 'package:task_manager_25_07_25/data/models/task_model.dart';
+import 'package:task_manager_25_07_25/data/services/network_caller.dart';
+import 'package:task_manager_25_07_25/data/utils/urls.dart';
+import 'package:task_manager_25_07_25/ui/widgets/showSnackBarMessage.dart';
 
 class TaskItemWidget extends StatelessWidget {
   const TaskItemWidget({
     super.key,
-    required this.taskModel, required this.onDeleteTap,
-    //required this.color,
-    //this.status,
+    required this.taskModel, required this.onDeleteTap, this.onStatusUpdate,
   });
 
   final TaskModel taskModel;
   final VoidCallback onDeleteTap;
+  final VoidCallback? onStatusUpdate;
 
-  //final Color color;
-  //final status;
 
   @override
   Widget build(BuildContext context) {
@@ -54,21 +55,21 @@ class TaskItemWidget extends StatelessWidget {
                               title: Text('Change Status'),
                               content: Column(
                                 children: [
-                                  ListTile(title: Text('New'), onTap: () {
-                                    _updateStatus();
-                                  }),
+                                  ListTile(title: Text('New'),
+                                    onTap: () => _updateStatus('New')
+                                  ),
                                   Divider(),
-                                  ListTile(title: Text('inProgress'), onTap: () {
-                                    _updateStatus();
-                                  }),
+                                  ListTile(title: Text('inProgress'),
+                                      onTap: () => _updateStatus('inProgress')
+                                  ),
                                   Divider(),
-                                  ListTile(title: Text('Completed'), onTap: () {
-                                    _updateStatus();
-                                  }),
+                                  ListTile(title: Text('Completed'),
+                                      onTap: () => _updateStatus('Completed')
+                                  ),
                                   Divider(),
-                                  ListTile(title: Text('Cancelled'), onTap: () {
-                                    _updateStatus();
-                                  }),
+                                  ListTile(title: Text('Cancelled'),
+                                      onTap: () => _updateStatus('Cancelled')
+                                  ),
                                 ],
                               ),
                             );
@@ -86,10 +87,21 @@ class TaskItemWidget extends StatelessWidget {
     );
   }
 
-  Future<void> _updateStatus()async{
 
+  Future<void> _updateStatus(String newStatus) async {
+    final NetworkResponse response = await NetworkCaller.getRequest(
+      url: Urls.updateTaskStatusUrl(taskModel.sId!, newStatus),
+    );
 
+    if (response.isSuccess) {
+      onStatusUpdate?.call();
+      showSnackBarMessage(TaskManagerApp.navigatorKey.currentContext!, 'Status updated to $newStatus');
+      Navigator.pop(TaskManagerApp.navigatorKey.currentContext!);
+    } else {
+      showSnackBarMessage(TaskManagerApp.navigatorKey.currentContext!,  response.errorMessage ?? 'Update failed');
+    }
   }
+
 
 
   Color _getStatusColor(String status) {

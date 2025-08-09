@@ -12,7 +12,7 @@ import 'package:task_manager_25_07_25/ui/widgets/task_item_widget.dart';
 import 'package:task_manager_25_07_25/ui/widgets/task_status_summary_counter_widget.dart';
 import 'package:task_manager_25_07_25/ui/widgets/tm_appBar.dart';
 
-void main() => runApp(MaterialApp(home: NewTaskListScreen()));
+
 
 class NewTaskListScreen extends StatefulWidget {
   const NewTaskListScreen({super.key});
@@ -74,8 +74,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
         return TaskItemWidget(
           taskModel: newTaskListModel!.taskList![index],
           onDeleteTap: () => _deleteTask(newTaskListModel!.taskList![index].sId!),
-         // status: 'New',
-          //color: Colors.teal,
+          onStatusUpdate: () => _getNewTaskList(),
         );
       },
     );
